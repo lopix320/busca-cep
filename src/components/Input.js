@@ -1,12 +1,19 @@
 import React from "react";
-import * as S from "./style";
+import * as S from "./styled";
 
-const Input = ({ id, label, ...props }) => {
+const Input = ({ id, fontSize, label, width, padding, ...props }) => {
   return (
     <>
       {/* <label htmlFor={id}>{label}</label> */}
-      <br />
-      <S.Input id={id} name={id} style={{ width: "7rem" }} {...props} />
+      {/* <br /> */}
+      <S.Input
+        fontSize={fontSize}
+        padding={padding}
+        width={width}
+        id={id}
+        name={id}
+        {...props}
+      />
     </>
   );
 };
