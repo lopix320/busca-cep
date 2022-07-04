@@ -1,7 +1,8 @@
 import React from "react";
 import Button from "./components/Button";
 import Input from "./components/Input";
-import * as S from "./style";
+import useValidation from "./hooks/useValidation";
+import * as S from "./styled";
 
 const formFields = [
   {
@@ -27,31 +28,13 @@ const formFields = [
 ];
 
 const App = () => {
-  const [cep, setCep] = React.useState("");
   const [dados, setDados] = React.useState("");
-  const [error, setError] = React.useState(null);
-
-  function validateCep(value) {
-    if (value.length === 0) {
-      setError("Preencha um valor!");
-      return false;
-    } else if (!/^\d{5}-?\d{3}$/.test(value)) {
-      setError("Preencha um cep válido!");
-      return false;
-    } else {
-      setError(null);
-      return true;
-    }
-  }
-
-  function handleBlur(event) {
-    validateCep(event.target.value);
-  }
+  const cep = useValidation("cep");
 
   function handleSubmit(event) {
     event.preventDefault();
-    if (validateCep(cep)) {
-      fetch(`https://viacep.com.br/ws/${cep}/json/`)
+    if (cep.validate) {
+      fetch(`https://viacep.com.br/ws/${cep.value}/json/`)
         .then((response) => response.json())
         .then((json) => setDados(json));
       console.log(dados);
@@ -59,45 +42,43 @@ const App = () => {
       console.log("Não enviar");
     }
   }
-
-  function handleChange({ target }) {
-    if (error) validateCep(target.value);
-    setCep(target.value);
-  }
-  console.log(cep);
   return (
     <>
       <S.Container>
         <S.Section>
-          <form onSubmit={handleSubmit}>
-            <Input
-              label="CEP:"
-              id="cep"
-              type="text"
-              value={cep}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              placeholder="00000-000"
-            />
-            <br />
-            <br />
-            <Button>Enviar</Button>
-            {error ? <p>{error}</p> : <p></p>}
-            {dados.erro ? <p>Não existe esse CEP!</p> : ""}
-            {formFields.map(({ id, label, type }) => (
-              <>
+          <S.Section2>
+            <form onSubmit={handleSubmit}>
+              <Input
+                width="80px"
+                fontSize="13px"
+                padding="2px 0px 2px 15px"
+                label="CEP:"
+                id="cep"
+                type="text"
+                value={cep.value}
+                onChange={cep.onChange}
+                onBlur={cep.onBlur}
+                placeholder="00000-000"
+              />
+              <br />
+              <Button>Enviar</Button>
+              {cep.error ? <p>{cep.error}</p> : ""}
+              {dados.erro ? <p>Não existe esse CEP!</p> : ""}
+              {formFields.map(({ id, label, type }) => (
                 <div key={id}>
                   {/* <label htmlFor={id}>{label}</label> */}
-                  <input
+                  <Input
+                    width="380px"
+                    padding="5px 10px 5px 8px"
                     type={type}
                     id={id}
                     value={dados[id]}
                     placeholder={label}
                   />
                 </div>
-              </>
-            ))}
-          </form>
+              ))}
+            </form>
+          </S.Section2>
         </S.Section>
       </S.Container>
     </>
